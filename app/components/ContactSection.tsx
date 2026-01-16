@@ -239,7 +239,7 @@ export default function ContactSection() {
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-gray-900"
-                    placeholder="John Doe"
+                    placeholder="John"
                   />
                 </div>
 
