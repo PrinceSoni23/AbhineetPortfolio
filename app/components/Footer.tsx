@@ -30,26 +30,26 @@ export default function Footer() {
     {
       name: "LinkedIn",
       icon: FaLinkedin,
-      href: "https://linkedin.com",
+      href: "https://www.linkedin.com/in/abhineet-verma-939897138/",
       color: "hover:text-blue-600",
     },
     {
       name: "ResearchGate",
       icon: FaResearchgate,
-      href: "https://researchgate.net",
+      href: "https://www.researchgate.net/profile/Abhineet-Verma",
       color: "hover:text-green-600",
     },
     {
       name: "Twitter",
       icon: FaTwitter,
-      href: "https://twitter.com",
+      href: "https://x.com/DrAbhineetVerma?s=20",
       color: "hover:text-sky-500",
     },
     {
-      name: "GitHub",
-      icon: FaGithub,
-      href: "https://github.com",
-      color: "hover:text-gray-800",
+      name: "Email",
+      icon: FaEnvelope,
+      url: "https://mail.google.com/mail/?view=cm&fs=1&to=abhineet.chy@mnit.ac.in",
+      color: "hover:text-red-600",
     },
   ];
 
