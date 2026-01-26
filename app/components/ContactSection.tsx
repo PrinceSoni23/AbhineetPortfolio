@@ -210,6 +210,21 @@ export default function ContactSection() {
                 </div>
               </div>
             </div>
+
+            {/* Google Map */}
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <iframe
+                src="https://maps.google.com/maps?q=Malaviya+National+Institute+of+Technology+Jaipur&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="200"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full"
+                title="MNIT Jaipur Location"
+              ></iframe>
+            </div>
           </motion.div>
 
           {/* Right Side - Contact Form */}

@@ -19,64 +19,102 @@ import {
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-// Publication categories
-const categories = [
-  { id: "all", name: "All Publications", count: 45 },
-  { id: "journal", name: "Journal Articles", count: 41 },
-  { id: "conference", name: "Conference Papers", count: 1 },
-  { id: "book", name: "Book Chapters", count: 3 },
-];
+// Compact interactive PieChart component (small, self-contained)
+function PieChart({
+  data,
+  size = 120,
+  innerRadius = 36,
+}: {
+  data: { label: string; value: number; color: string }[];
+  size?: number;
+  innerRadius?: number;
+}) {
+  const [hovered, setHovered] = useState<number | null>(null);
 
-// Research Works and Awards
-const researchWorks = [
-  {
-    id: "r1",
-    title: "Synthesis of Novel Organic Compounds",
-    category: "Research",
-    year: "2023",
-    description:
-      "Developed innovative methods for synthesizing complex organic molecules with applications in pharmaceutical chemistry.",
-    image: "/gallery/g13.jpeg",
-    impact: "High Impact Factor",
-    citations: 150,
-    type: "research",
-  },
-  {
-    id: "r2",
-    title: "Best Research Paper Award",
-    category: "Award",
-    year: "2022",
-    description:
-      "Received international recognition for groundbreaking research in catalytic processes and green chemistry.",
-    image: "/gallery/g15.jpeg",
-    impact: "International Recognition",
-    citations: 200,
-    type: "award",
-  },
-  {
-    id: "r3",
-    title: "Quantum Chemical Analysis",
-    category: "Research",
-    year: "2023",
-    description:
-      "Advanced computational studies on molecular interactions and reaction mechanisms.",
-    image: "/gallery/g16.jpeg",
-    impact: "Breakthrough Research",
-    citations: 120,
-    type: "research",
-  },
-  {
-    id: "r4",
-    title: "Excellence in Teaching Award",
-    category: "Award",
-    year: "2021",
-    description:
-      "Honored for exceptional contributions to chemistry education and student mentorship.",
-    image: "/gallery/g17.jpeg",
-    impact: "University Distinction",
-    citations: 0,
-    type: "award",
-  },
+  const total = data.reduce((s, d) => s + d.value, 0);
+  let cumulative = 0;
+  const cx = size / 2;
+  const cy = size / 2;
+  const radius = size / 2;
+
+  const arcs = data.map(d => {
+    const startAngle = (cumulative / total) * Math.PI * 2;
+    cumulative += d.value;
+    const endAngle = (cumulative / total) * Math.PI * 2;
+
+    const x1 = cx + radius * Math.cos(startAngle - Math.PI / 2);
+    const y1 = cy + radius * Math.sin(startAngle - Math.PI / 2);
+    const x2 = cx + radius * Math.cos(endAngle - Math.PI / 2);
+    const y2 = cy + radius * Math.sin(endAngle - Math.PI / 2);
+
+    const largeArcFlag = endAngle - startAngle <= Math.PI ? 0 : 1;
+
+    const midAngle = (startAngle + endAngle) / 2;
+    const offset = hovered === null ? 0 : hovered === data.indexOf(d) ? 6 : 0;
+    const dx = Math.cos(midAngle - Math.PI / 2) * offset;
+    const dy = Math.sin(midAngle - Math.PI / 2) * offset;
+
+    const path = `M ${cx} ${cy} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+    return { path, color: d.color, label: d.label, value: d.value, dx, dy };
+  });
+
+  return (
+    <div className="relative w-[120px] h-[120px] p-2">
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="block"
+        style={{ overflow: "visible" }}
+      >
+        <g>
+          {arcs.map((a, idx) => (
+            <path
+              key={idx}
+              d={a.path}
+              fill={a.color}
+              onMouseEnter={() => setHovered(idx)}
+              onMouseLeave={() => setHovered(null)}
+              transform={
+                hovered === idx ? `translate(${a.dx}, ${a.dy})` : undefined
+              }
+              style={{
+                transition: "transform 140ms ease, opacity 140ms ease",
+                opacity: hovered === null ? 0.95 : hovered === idx ? 1 : 0.45,
+                cursor: "pointer",
+              }}
+            />
+          ))}
+          <circle cx={cx} cy={cy} r={innerRadius} fill="#fff" />
+        </g>
+      </svg>
+
+      {/* Centered tooltip when hovered: shows label + percentage */}
+      {hovered !== null ? (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-white shadow rounded px-2 py-1 text-xs text-gray-800">
+            <div className="font-medium truncate max-w-[120px]">
+              {data[hovered].label}
+            </div>
+            <div className="text-gray-500 text-[11px]">
+              {data[hovered].value}%
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// Data for the research areas (used by PieChart and legend)
+const researchAreas = [
+  { label: "NIR Emission from Ln Ions", value: 25, color: "#6366F1" },
+  { label: "Vibrational Raman Studies", value: 20, color: "#3B82F6" },
+  { label: "Ionic Liquids", value: 5, color: "#06B6D4" },
+  { label: "Single Molecular Magnetism", value: 5, color: "#F97316" },
+  { label: "Luminescence Studies", value: 30, color: "#F43F5E" },
+  { label: "Single Crystal XRD", value: 15, color: "#10B981" },
 ];
 
 // Grants and Achievements
@@ -147,7 +185,7 @@ const publications = [
     year: 2025,
     volume: "437",
     pages: "128622",
-    doi: "",
+    doi: "10.1016/j.molliq.2025.128622",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -165,7 +203,7 @@ const publications = [
     year: 2025,
     volume: "10",
     pages: "02795",
-    doi: "",
+    doi: "10.1002/slct.202502795",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -184,7 +222,7 @@ const publications = [
     year: 2025,
     volume: "44",
     pages: "",
-    doi: "",
+    doi: "10.1039/D5TB00911A",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -202,7 +240,7 @@ const publications = [
     year: 2025,
     volume: "20",
     pages: "1-12",
-    doi: "",
+    doi: "10.1002/asia.202500017",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -220,7 +258,7 @@ const publications = [
     year: 2025,
     volume: "12",
     pages: "5705",
-    doi: "",
+    doi: "10.1016/j.saa.2025.125705",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -238,7 +276,7 @@ const publications = [
     year: 2025,
     volume: "283",
     pages: "121284",
-    doi: "",
+    doi: "10.1016/j.jlumin.2025.121284",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -257,7 +295,7 @@ const publications = [
     year: 2025,
     volume: "23",
     pages: "16432",
-    doi: "",
+    doi: "10.1039/D4TC04436C",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -276,7 +314,7 @@ const publications = [
     year: 2025,
     volume: "13",
     pages: "101990",
-    doi: "",
+    doi: "10.1016/j.rechem.2024.101990",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -295,7 +333,7 @@ const publications = [
     year: 2024,
     volume: "315",
     pages: "124265",
-    doi: "",
+    doi: "10.1016/j.saa.2024.124265",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -315,7 +353,7 @@ const publications = [
     year: 2023,
     volume: "52",
     pages: "12604-12607",
-    doi: "",
+    doi: "10.1039/D3DT02244G",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -332,7 +370,7 @@ const publications = [
     year: 2023,
     volume: "8(29)",
     pages: "e202301810",
-    doi: "",
+    doi: "10.1002/slct.202301810",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -350,7 +388,7 @@ const publications = [
     year: 2023,
     volume: "127",
     pages: "4154-4164",
-    doi: "",
+    doi: "10.1021/acs.jpcb.3c01674",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -369,7 +407,7 @@ const publications = [
     year: 2023,
     volume: "665",
     pages: "415043",
-    doi: "",
+    doi: "10.1016/j.physb.2023.415043",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -388,7 +426,7 @@ const publications = [
     year: 2023,
     volume: "127(5)",
     pages: "2508-2517",
-    doi: "",
+    doi: "10.1021/acs.jpcc.2c08169",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -407,7 +445,7 @@ const publications = [
     year: 2023,
     volume: "365",
     pages: "1-7",
-    doi: "",
+    doi: "10.1002/adsc.202201264",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -426,7 +464,7 @@ const publications = [
     year: 2022,
     volume: "433",
     pages: "114130",
-    doi: "",
+    doi: "10.1016/j.jphotochem.2022.114130",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -445,7 +483,7 @@ const publications = [
     year: 2022,
     volume: "274(8)",
     pages: "121121",
-    doi: "",
+    doi: "10.1016/j.saa.2022.121121",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -464,7 +502,7 @@ const publications = [
     year: 2022,
     volume: "24",
     pages: "119-131",
-    doi: "",
+    doi: "10.1039/D1CE01240A",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -481,7 +519,7 @@ const publications = [
     year: 2022,
     volume: "53",
     pages: "1-9",
-    doi: "",
+    doi: "10.1002/jrs.6248",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -500,7 +538,7 @@ const publications = [
     year: 2022,
     volume: "46",
     pages: "5830-5838",
-    doi: "",
+    doi: "10.1039/D1NJ05992F",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -519,7 +557,7 @@ const publications = [
     year: 2022,
     volume: "1267",
     pages: "133513",
-    doi: "",
+    doi: "10.1016/j.molstruc.2022.133513",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -538,7 +576,7 @@ const publications = [
     year: 2022,
     volume: "1250",
     pages: "131679",
-    doi: "",
+    doi: "10.1016/j.molstruc.2021.131679",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -555,7 +593,7 @@ const publications = [
     year: 2022,
     volume: "46",
     pages: "7212-7222",
-    doi: "",
+    doi: "10.1039/D1NJ06067B",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -572,7 +610,7 @@ const publications = [
     year: 2022,
     volume: "6(2)",
     pages: "134-139",
-    doi: "",
+    doi: "10.52482/ayurline.v6i02.774",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -591,7 +629,7 @@ const publications = [
     year: 2022,
     volume: "578",
     pages: "20380-20401",
-    doi: "",
+    doi: "10.1016/j.msec.2020.111513",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -610,7 +648,7 @@ const publications = [
     year: 2022,
     volume: "10",
     pages: "8462-8477",
-    doi: "",
+    doi: "10.1039/D2TB01447E",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -629,7 +667,7 @@ const publications = [
     year: 2022,
     volume: "14",
     pages: "10889-10902",
-    doi: "",
+    doi: "10.1039/D2NR02776J",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -647,7 +685,7 @@ const publications = [
     year: 2022,
     volume: "640",
     pages: "414050",
-    doi: "",
+    doi: "10.1016/j.physb.2022.414050",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -670,7 +708,7 @@ const publications = [
     year: 2022,
     volume: "120",
     pages: "022105",
-    doi: "",
+    doi: "10.1063/5.0077525",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -690,7 +728,7 @@ const publications = [
     year: 2021,
     volume: "45",
     pages: "2696-2709",
-    doi: "",
+    doi: "10.1039/D0NJ05609F",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -709,7 +747,7 @@ const publications = [
     year: 2021,
     volume: "11(1)",
     pages: "88669-88678",
-    doi: "",
+    doi: "10.1038/s41598-021-87795-5",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -728,7 +766,7 @@ const publications = [
     year: 2020,
     volume: "44",
     pages: "14116-14128",
-    doi: "",
+    doi: "10.1039/D0NJ01966F",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -746,7 +784,7 @@ const publications = [
     year: 2020,
     volume: "246",
     pages: "118958",
-    doi: "",
+    doi: "10.1016/j.saa.2020.118958",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -764,7 +802,7 @@ const publications = [
     year: 2020,
     volume: "44",
     pages: "14859-14864",
-    doi: "",
+    doi: "10.1039/D0NJ03224G",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -781,7 +819,7 @@ const publications = [
     year: 2020,
     volume: "5",
     pages: "448-459",
-    doi: "",
+    doi: "10.1021/acsomega.9b02795",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -800,7 +838,7 @@ const publications = [
     year: 2019,
     volume: "4",
     pages: "49-58",
-    doi: "",
+    doi: "10.1002/slct.201803250",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -837,7 +875,7 @@ const publications = [
     year: 2019,
     volume: "164",
     pages: "80-89",
-    doi: "",
+    doi: "10.1016/j.poly.2019.02.017",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -855,7 +893,7 @@ const publications = [
     year: 2019,
     volume: "5",
     pages: "864-894",
-    doi: "",
+    doi: "10.1002/ejoc.201801411",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -874,7 +912,7 @@ const publications = [
     year: 2018,
     volume: "18(9)",
     pages: "5628-5637",
-    doi: "",
+    doi: "10.1021/acs.cgd.8b01073",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -894,7 +932,7 @@ const publications = [
     year: 2017,
     volume: "192",
     pages: "156-165",
-    doi: "",
+    doi: "10.1016/j.jlumin.2017.06.036",
     category: "journal",
     citations: 0,
     impact: "High Impact",
@@ -903,6 +941,14 @@ const publications = [
     keywords: ["NIR Luminescence", "Lanthanides", "Zinc Complexes"],
     image: "/publications/p42.png",
   },
+];
+
+// Simple categories for filtering
+const categories = [
+  { id: "all", label: "All" },
+  { id: "journal", label: "Journals" },
+  { id: "book", label: "Book Chapters" },
+  { id: "award", label: "Awards" },
 ];
 
 // Book Chapters
@@ -952,8 +998,8 @@ const bookChapters = [
 export default function PublicationsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedPub, setExpandedPub] = useState<number | null>(null);
-  const [expandedChapter, setExpandedChapter] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const publicationsPerPage = 10;
 
   const filteredPublications = publications.filter(pub => {
     const matchesCategory =
@@ -978,14 +1024,49 @@ export default function PublicationsPage() {
     return matchesSearch;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(
+    filteredPublications.length / publicationsPerPage
+  );
+  const indexOfLastPub = currentPage * publicationsPerPage;
+  const indexOfFirstPub = indexOfLastPub - publicationsPerPage;
+  const currentPublications = filteredPublications.slice(
+    indexOfFirstPub,
+    indexOfLastPub
+  );
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchQuery]);
+
+  // Scroll to publications section when page changes
+  const scrollToPublications = () => {
+    const publicationsSection = document.getElementById("publications-section");
+    if (publicationsSection) {
+      const navbarHeight = 80; // Approximate navbar height
+      const yOffset = -navbarHeight;
+      const y =
+        publicationsSection.getBoundingClientRect().top +
+        window.pageYOffset +
+        yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    scrollToPublications();
+  };
+
   return (
     <div className="min-h-screen bg-white w-full overflow-x-hidden">
       {/* Navbar - Always visible */}
       <Navbar />
 
       {/* Hero Header */}
-      <section className="relative pt-20 pb-12 md:pt-32 md:pb-16 border-b border-gray-200 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-7xl">
+      <section className="relative min-h-screen border-b border-gray-200 bg-gray-50 flex items-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-7xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1007,87 +1088,102 @@ export default function PublicationsPage() {
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              {[
-                { label: "Publications", value: "60" },
-                { label: "Citations", value: "320+" },
-                { label: "Reads", value: "8,795+" },
-                { label: "Avg. Impact", value: "8.5" },
-              ].map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + index * 0.1 }}
-                  className="bg-white rounded-lg p-4 border border-gray-200"
-                >
-                  <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-gray-600">{stat.label}</div>
-                </motion.div>
-              ))}
+            {/* Stats + small pie chart */}
+            <div className="mt-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="w-full md:flex-1">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: "Publications", value: "60" },
+                    { label: "Citations", value: "320+" },
+                    { label: "Reads", value: "8,795+" },
+                    { label: "Avg. Impact", value: "8.5" },
+                  ].map((stat, index) => (
+                    <motion.div
+                      key={stat.label}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 + index * 0.1 }}
+                      className="bg-white rounded-lg p-4 border border-gray-200"
+                    >
+                      <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+                        {stat.value}
+                      </div>
+                      <div className="text-xs text-gray-600">{stat.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* (small hero pie removed as requested) */}
             </div>
           </motion.div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 1,
+            delay: 1.2,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+          className="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 z-20 hidden md:flex"
+        >
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-gray-500 text-xs uppercase tracking-wider">
+              Scroll
+            </span>
+            <div className="w-5 h-8 border-2 border-gray-400 rounded-full flex justify-center">
+              <div className="w-1 h-2 bg-gray-900 rounded-full mt-1.5"></div>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
-      {/* Grants and Achievements Section */}
-      <section className="py-16 bg-white border-b border-gray-200">
+      {/* Research Areas full section */}
+      <section id="research-areas" className="py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Grants & Achievements
+          <div className="rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Research Areas
             </h2>
-            <div className="h-1 w-20 bg-blue-600 mx-auto mb-4"></div>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Recognitions, fellowships, and funded research projects
+            <p className="text-sm text-gray-600 mb-6">
+              Overview of main research areas and their relative emphasis.
             </p>
-          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {grantsAndAchievements.map((item, index) => {
-              const IconComponent = item.icon;
-              return (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group bg-gray-50 border border-gray-200 rounded-xl p-6 hover:border-blue-600 hover:shadow-lg transition-all duration-300"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="shrink-0 w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <IconComponent className="text-xl" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="text-lg font-bold text-gray-900 leading-tight">
-                          {item.title}
-                        </h3>
-                        <span className="shrink-0 px-3 py-1 bg-white border border-gray-300 text-gray-700 text-xs font-semibold rounded-full">
-                          {item.type}
-                        </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+              <div className="col-span-1 flex justify-center">
+                <div className="rounded-xl p-6">
+                  <PieChart data={researchAreas} size={180} innerRadius={56} />
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {researchAreas.map(area => (
+                    <div
+                      key={area.label}
+                      className="flex items-center gap-3 p-2 bg-gray-50 rounded"
+                    >
+                      <div
+                        style={{ background: area.color }}
+                        className="w-4 h-4 rounded-full shrink-0"
+                      ></div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-gray-800 truncate">
+                          {area.label}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {area.value}%
+                        </div>
                       </div>
-                      <p className="text-sm font-semibold text-blue-600 mb-2">
-                        {item.year}
-                      </p>
-                      {item.reference && (
-                        <p className="text-sm text-gray-500 font-mono">
-                          {item.reference}
-                        </p>
-                      )}
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1108,16 +1204,7 @@ export default function PublicationsPage() {
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
-                  {category.name}
-                  <span
-                    className={`ml-2 px-2 py-0.5 rounded text-xs ${
-                      selectedCategory === category.id
-                        ? "bg-blue-700"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    {category.count}
-                  </span>
+                  {category.label}
                 </button>
               ))}
             </div>
@@ -1137,196 +1224,8 @@ export default function PublicationsPage() {
         </div>
       </section>
 
-      {/* Book Chapters Section */}
-      {(selectedCategory === "all" || selectedCategory === "book") &&
-        filteredBookChapters.length > 0 && (
-          <section className="py-16 md:py-24 bg-white">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-6xl">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="text-center mb-12"
-              >
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  Book Chapters
-                </h2>
-                <div className="h-1 w-20 bg-purple-600 mx-auto mb-4"></div>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                  Contributed chapters in academic books and monographs
-                </p>
-              </motion.div>
-
-              <motion.div layout className="space-y-10">
-                <AnimatePresence mode="popLayout">
-                  {filteredBookChapters.map((chapter, index) => (
-                    <motion.article
-                      key={chapter.id}
-                      layout
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      transition={{ duration: 0.3, delay: index * 0.03 }}
-                      className="group relative"
-                    >
-                      <div className="border-l-4 border-purple-600 pl-8 pr-6 py-6 hover:bg-purple-50/30 transition-all duration-300 rounded-r-lg">
-                        {/* Top Meta Information Row */}
-                        <div className="flex flex-wrap items-center gap-4 mb-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-12 h-12 bg-purple-900 text-white rounded flex items-center justify-center font-bold text-sm">
-                              {chapter.year}
-                            </div>
-                            <div className="h-8 w-px bg-purple-300"></div>
-                          </div>
-
-                          <div className="flex items-center gap-3 flex-wrap">
-                            <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium uppercase tracking-wider rounded">
-                              Book Chapter
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Main Content Grid */}
-                        <div className="grid md:grid-cols-[160px_1fr] gap-6 mb-4">
-                          <div className="relative h-40 md:h-48 w-full md:w-40 rounded overflow-hidden bg-purple-50 shadow-sm group-hover:shadow-md transition-shadow">
-                            <Image
-                              src={chapter.image}
-                              alt={chapter.title}
-                              fill
-                              className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                            />
-                            <div className="absolute inset-0 bg-purple-900/5"></div>
-                          </div>
-
-                          <div>
-                            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-purple-700 transition-colors">
-                              {chapter.title}
-                            </h3>
-
-                            <p className="text-sm text-gray-600 mb-2">
-                              <span className="font-medium">Authors:</span>{" "}
-                              {chapter.authors}
-                            </p>
-
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-700 mb-3">
-                              <span>
-                                <span className="font-medium">Publisher:</span>{" "}
-                                {chapter.publisher}
-                              </span>
-                              {chapter.pages && (
-                                <span>
-                                  <span className="font-medium">Pages:</span>{" "}
-                                  {chapter.pages}
-                                </span>
-                              )}
-                            </div>
-
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {chapter.keywords.map((keyword, idx) => (
-                                <span
-                                  key={idx}
-                                  className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded border border-purple-200"
-                                >
-                                  {keyword}
-                                </span>
-                              ))}
-                            </div>
-
-                            <div className="flex items-center gap-4 text-sm">
-                              <button
-                                onClick={() =>
-                                  setExpandedChapter(
-                                    expandedChapter === chapter.id
-                                      ? null
-                                      : chapter.id
-                                  )
-                                }
-                                className="font-medium text-purple-600 hover:text-purple-800 flex items-center gap-1.5 transition-colors"
-                              >
-                                <FaBook className="text-xs" />
-                                {expandedChapter === chapter.id
-                                  ? "Hide"
-                                  : "View"}{" "}
-                                Abstract
-                                <motion.span
-                                  animate={{
-                                    rotate:
-                                      expandedChapter === chapter.id ? 180 : 0,
-                                  }}
-                                  transition={{ duration: 0.2 }}
-                                  className="text-xs"
-                                >
-                                  ▼
-                                </motion.span>
-                              </button>
-
-                              {chapter.doi && (
-                                <>
-                                  <span className="text-gray-300">|</span>
-                                  <a
-                                    href="https://www.researchgate.net/profile/Abhineet-Verma"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm font-medium text-purple-600 hover:text-purple-800 flex items-center gap-1.5 transition-colors"
-                                  >
-                                    <FaExternalLinkAlt className="text-xs" />
-                                    DOI
-                                  </a>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Expandable Abstract */}
-                        <AnimatePresence>
-                          {expandedChapter === chapter.id && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.25 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="mt-6 pt-6 border-t border-purple-200">
-                                <h4 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wide">
-                                  Abstract
-                                </h4>
-                                <p className="text-sm text-gray-700 leading-relaxed mb-3">
-                                  {chapter.abstract}
-                                </p>
-                                {chapter.doi && (
-                                  <p className="text-xs text-gray-500">
-                                    <span className="font-semibold">DOI:</span>{" "}
-                                    <a
-                                      href="https://www.researchgate.net/profile/Abhineet-Verma"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-purple-600 hover:underline"
-                                    >
-                                      View on ResearchGate
-                                    </a>
-                                  </p>
-                                )}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-
-                      <div className="absolute -left-4 top-8 w-8 h-8 bg-white border border-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-400 group-hover:text-purple-600 group-hover:border-purple-600 transition-all">
-                        {index + 1}
-                      </div>
-                    </motion.article>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-          </section>
-        )}
-
       {/* Publications List */}
-      <section className="py-16 md:py-24 bg-gray-50">
+      <section id="publications-section" className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1344,9 +1243,20 @@ export default function PublicationsPage() {
             </p>
           </motion.div>
 
-          <motion.div layout className="space-y-10">
-            <AnimatePresence mode="popLayout">
-              {filteredPublications.map((pub, index) => (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              initial={{ opacity: 0, rotateY: -15, x: -50 }}
+              animate={{ opacity: 1, rotateY: 0, x: 0 }}
+              exit={{ opacity: 0, rotateY: 15, x: 50 }}
+              transition={{
+                duration: 0.6,
+                ease: [0.43, 0.13, 0.23, 0.96],
+              }}
+              style={{ transformStyle: "preserve-3d", perspective: 1000 }}
+              className="space-y-10"
+            >
+              {currentPublications.map((pub, index) => (
                 <motion.article
                   key={pub.id}
                   layout
@@ -1438,83 +1348,125 @@ export default function PublicationsPage() {
 
                         {/* Action Buttons - Clean Row */}
                         <div className="flex items-center gap-3 mt-2">
-                          <button
-                            onClick={() =>
-                              setExpandedPub(
-                                expandedPub === pub.id ? null : pub.id
-                              )
-                            }
-                            className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors"
-                          >
-                            {expandedPub === pub.id ? "Hide" : "Read"} Abstract
-                            <motion.span
-                              animate={{
-                                rotate: expandedPub === pub.id ? 180 : 0,
-                              }}
-                              transition={{ duration: 0.2 }}
-                              className="text-xs"
-                            >
-                              ▼
-                            </motion.span>
-                          </button>
-
-                          <span className="text-gray-300">|</span>
-
                           <a
-                            href="https://www.researchgate.net/profile/Abhineet-Verma"
+                            href={
+                              pub.doi
+                                ? `https://doi.org/${pub.doi}`
+                                : "https://www.researchgate.net/profile/Abhineet-Verma"
+                            }
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors"
                           >
                             <FaExternalLinkAlt className="text-xs" />
-                            DOI
+                            {pub.doi ? "DOI" : "ResearchGate"}
                           </a>
                         </div>
                       </div>
                     </div>
-
-                    {/* Expandable Abstract - Clean Design */}
-                    <AnimatePresence>
-                      {expandedPub === pub.id && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.25 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="mt-6 pt-6 border-t border-gray-200">
-                            <h4 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wide">
-                              Abstract
-                            </h4>
-                            <p className="text-sm text-gray-700 leading-relaxed mb-3">
-                              {pub.abstract}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              <span className="font-semibold">DOI:</span>{" "}
-                              <a
-                                href="https://www.researchgate.net/profile/Abhineet-Verma"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:underline"
-                              >
-                                View on ResearchGate
-                              </a>
-                            </p>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
                   </div>
 
                   {/* Subtle Number Indicator */}
                   <div className="absolute -left-4 top-8 w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-400 group-hover:text-blue-600 group-hover:border-blue-600 transition-all">
-                    {index + 1}
+                    {indexOfFirstPub + index + 1}
                   </div>
                 </motion.article>
               ))}
-            </AnimatePresence>
-          </motion.div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Pagination Controls */}
+          {filteredPublications.length > publicationsPerPage && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center items-center gap-2 mt-12"
+            >
+              {/* Previous Button */}
+              <button
+                onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === 1
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg"
+                }`}
+              >
+                Previous
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  pageNum => {
+                    // Show first page, last page, current page, and pages around current
+                    const showPage =
+                      pageNum === 1 ||
+                      pageNum === totalPages ||
+                      Math.abs(pageNum - currentPage) <= 1;
+
+                    const showEllipsis =
+                      (pageNum === 2 && currentPage > 3) ||
+                      (pageNum === totalPages - 1 &&
+                        currentPage < totalPages - 2);
+
+                    if (showEllipsis) {
+                      return (
+                        <span key={pageNum} className="px-3 py-2 text-gray-400">
+                          ...
+                        </span>
+                      );
+                    }
+
+                    if (!showPage) return null;
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          currentPage === pageNum
+                            ? "bg-blue-600 text-white shadow-md"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  }
+                )}
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() =>
+                  handlePageChange(Math.min(currentPage + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  currentPage === totalPages
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg"
+                }`}
+              >
+                Next
+              </button>
+            </motion.div>
+          )}
+
+          {/* Pagination Info */}
+          {filteredPublications.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center mt-6 text-sm text-gray-600"
+            >
+              Showing {indexOfFirstPub + 1}-
+              {Math.min(indexOfLastPub, filteredPublications.length)} of{" "}
+              {filteredPublications.length} publications
+            </motion.div>
+          )}
 
           {/* No Results */}
           {filteredPublications.length === 0 &&
@@ -1535,6 +1487,131 @@ export default function PublicationsPage() {
             )}
         </div>
       </section>
+
+      {/* Book Chapters Section */}
+      {(selectedCategory === "all" || selectedCategory === "book") &&
+        filteredBookChapters.length > 0 && (
+          <section className="py-16 md:py-24 bg-gray-50">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-6xl">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center mb-12"
+              >
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  Book Chapters
+                </h2>
+                <div className="h-1 w-20 bg-purple-600 mx-auto mb-4"></div>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  Contributed chapters in academic books and monographs
+                </p>
+              </motion.div>
+
+              <motion.div layout className="space-y-10">
+                <AnimatePresence mode="popLayout">
+                  {filteredBookChapters.map((chapter, index) => (
+                    <motion.article
+                      key={chapter.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{ duration: 0.3, delay: index * 0.03 }}
+                      className="group relative"
+                    >
+                      <div className="border-l-4 border-purple-600 pl-8 pr-6 py-6 hover:bg-white transition-all duration-300 rounded-r-lg">
+                        {/* Top Meta Information Row */}
+                        <div className="flex flex-wrap items-center gap-4 mb-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-12 h-12 bg-purple-900 text-white rounded flex items-center justify-center font-bold text-sm">
+                              {chapter.year}
+                            </div>
+                            <div className="h-8 w-px bg-purple-300"></div>
+                          </div>
+
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium uppercase tracking-wider rounded">
+                              Book Chapter
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Main Content Grid */}
+                        <div className="grid md:grid-cols-[160px_1fr] gap-6 mb-4">
+                          <div className="relative h-40 md:h-48 w-full md:w-40 rounded overflow-hidden bg-purple-50 shadow-sm group-hover:shadow-md transition-shadow">
+                            <Image
+                              src={chapter.image}
+                              alt={chapter.title}
+                              fill
+                              className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                            />
+                            <div className="absolute inset-0 bg-purple-900/5"></div>
+                          </div>
+
+                          <div>
+                            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-purple-700 transition-colors">
+                              {chapter.title}
+                            </h3>
+
+                            <p className="text-sm text-gray-600 mb-2">
+                              <span className="font-medium">Authors:</span>{" "}
+                              {chapter.authors}
+                            </p>
+
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-700 mb-3">
+                              <span>
+                                <span className="font-medium">Publisher:</span>{" "}
+                                {chapter.publisher}
+                              </span>
+                              {chapter.pages && (
+                                <span>
+                                  <span className="font-medium">Pages:</span>{" "}
+                                  {chapter.pages}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {chapter.keywords.map((keyword, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded border border-purple-200"
+                                >
+                                  {keyword}
+                                </span>
+                              ))}
+                            </div>
+
+                            <div className="flex items-center gap-4 text-sm">
+                              <a
+                                href={
+                                  chapter.doi
+                                    ? `https://doi.org/${chapter.doi}`
+                                    : "https://www.researchgate.net/profile/Abhineet-Verma"
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors text-xs font-medium"
+                              >
+                                <FaExternalLinkAlt className="text-xs" />
+                                {chapter.doi ? "DOI" : "ResearchGate"}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="absolute -left-4 top-8 w-8 h-8 bg-white border border-purple-200 rounded-full flex items-center justify-center text-xs font-bold text-purple-400 group-hover:text-purple-600 group-hover:border-purple-600 transition-all">
+                        {index + 1}
+                      </div>
+                    </motion.article>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </div>
+          </section>
+        )}
 
       <Footer />
     </div>

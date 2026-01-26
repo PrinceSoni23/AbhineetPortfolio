@@ -16,6 +16,8 @@ import {
   FaEdit,
 } from "react-icons/fa";
 
+// Pie chart removed from this page (moved to Publications page)
+
 const researchWorks = [
   {
     id: "1",
@@ -92,6 +94,8 @@ const grantsAndAchievements = [
 export default function ResearchPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
+  // pieData removed; chart is displayed on the Publications page instead
+
   const filteredWorks =
     selectedCategory === "All"
       ? researchWorks
@@ -127,7 +131,7 @@ export default function ResearchPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-center"
+            className="text-center mb-8"
           >
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-4">
               Research & Awards

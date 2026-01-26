@@ -21,6 +21,8 @@ import {
   FaEdit,
 } from "react-icons/fa";
 
+// Pie chart moved to the dedicated research page. Kept ResearchSection focused on the swiper/grid.
+
 export const researchWorks = [
   {
     id: 1,
@@ -250,6 +252,8 @@ const ResearchCard = ({ work }: { work: (typeof researchWorks)[0] }) => {
 export default function ResearchSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  // Pie chart removed from this component; it's displayed on the dedicated research page.
 
   return (
     <section

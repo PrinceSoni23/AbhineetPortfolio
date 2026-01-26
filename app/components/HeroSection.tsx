@@ -6,9 +6,10 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const backgroundImages = [
-  "/images/b1.jpeg",
-  "/images/b22.jpeg",
-  "/images/b3.jpeg",
+  "/images/b11.jpeg",
+  "/images/b222.jpeg",
+  "/images/b33.jpeg",
+  "/images/b44.jpeg",
 ];
 
 export default function HeroSection() {
