@@ -25,7 +25,7 @@ const phdStudents = [
     phone: "7424969332",
     topic: "Single or Chain Molecular Magnetism",
     status: "Pursuing",
-    image: "/images/students/student-1.jpg",
+    image: "/images/students/Shrasty.jpeg",
   },
   {
     id: 2,
@@ -35,7 +35,7 @@ const phdStudents = [
     phone: "8755557436",
     topic: "ESIPT Dynamics",
     status: "Pursuing",
-    image: "/images/students/student-2.jpg",
+    image: "/images/students/Sumit.jpeg",
   },
   {
     id: 3,
@@ -45,7 +45,7 @@ const phdStudents = [
     phone: "7891162493",
     topic: "Fluorescent Ionic Liquid",
     status: "Pursuing",
-    image: "/images/students/student-3.jpg",
+    image: "/images/students/Picture3.jpg",
   },
 ];
 
@@ -57,7 +57,7 @@ const currentMscStudents = [
     degree: "M.Sc Chemistry Final Year",
     email: "shashankmishra.mnit@gmail.com",
     phone: "7905275625",
-    image: "/images/students/msc-1.jpg",
+    image: "/images/students/Picture4.png",
   },
   {
     id: 2,
@@ -65,7 +65,7 @@ const currentMscStudents = [
     degree: "M.Sc Chemistry Final Year",
     email: "1001sakshidu@gmail.com",
     phone: "8931072100",
-    image: "/images/students/msc-2.jpg",
+    image: "/images/students/Sakshi.jpeg",
   },
   {
     id: 3,
@@ -73,7 +73,7 @@ const currentMscStudents = [
     degree: "M.Sc Chemistry Final Year",
     email: "richakushik9598@gmail.com",
     phone: "9911186603",
-    image: "/images/students/msc-3.jpg",
+    image: "/images/students/Richaa.png",
   },
 ];
 
@@ -86,7 +86,7 @@ const pastMscStudents = [
     email: "harshitamehra9210@gmail.com",
     phone: "7737893845",
     currentPosition: "",
-    image: "/images/students/alumni-1.jpg",
+    image: "/images/students/Harshita.jpeg",
   },
   {
     id: 2,
@@ -95,7 +95,7 @@ const pastMscStudents = [
     email: "amanrajput7882@gmail.com",
     phone: "8630788223",
     currentPosition: "Trainee Faculty at RV Learning Hub, Bengaluru",
-    image: "/images/students/alumni-2.jpg",
+    image: "/images/students/Aman.jpeg",
   },
 ];
 
@@ -114,12 +114,22 @@ const StudentCard = ({ student, index, showTopic = false }: any) => {
       className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300"
     >
       {/* Image Section */}
-      <div className="relative h-64 bg-gradient-to-br from-blue-500 to-blue-600 overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-xl">
-            <FaUserGraduate className="text-6xl text-blue-600" />
+      <div className="relative h-64 bg-white overflow-hidden">
+        {student.image ? (
+          <Image
+            src={student.image}
+            alt={student.name}
+            fill
+            className="object-contain p-2"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
+            <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-xl">
+              <FaUserGraduate className="text-6xl text-blue-600" />
+            </div>
           </div>
-        </div>
+        )}
         {/* Status Badge */}
         {student.status && (
           <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
@@ -271,8 +281,14 @@ export default function StudentsPage() {
             className="text-center max-w-4xl mx-auto"
           >
             <div className="inline-block mb-6">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto">
-                <FaGraduationCap className="text-5xl" />
+              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto overflow-hidden">
+                <Image
+                  src="/images/logo.png"
+                  alt="Logo"
+                  width={80}
+                  height={80}
+                  className="object-cover"
+                />
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">

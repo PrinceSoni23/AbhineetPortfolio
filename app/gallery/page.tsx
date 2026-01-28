@@ -12,26 +12,30 @@ const featuredImages = [
   {
     id: 1,
     src: "/gallery/gc14.jpeg",
-    title: "Research Excellence Award Ceremony",
-    description: "Receiving the prestigious research award in 2023",
+    title: "Mentoring Future Scientists",
+    description:
+      "Guiding students through their research journey and academic excellence",
   },
   {
     id: 2,
     src: "/gallery/gc22.jpeg",
-    title: "International Conference Keynote",
-    description: "Delivering keynote speech at Chemistry Summit 2023",
+    title: "Inspiring Young Minds",
+    description:
+      "Sharing knowledge and passion for chemistry with the next generation",
   },
   {
     id: 3,
     src: "/gallery/gc333.jpeg",
-    title: "Laboratory Research",
-    description: "Working with research team on breakthrough project",
+    title: "Collaborative Learning",
+    description:
+      "Working together with students on innovative research projects",
   },
   {
     id: 4,
     src: "/gallery/gc4.jpeg",
-    title: "Student Mentorship",
-    description: "Guiding PhD students in advanced chemistry research",
+    title: "Building Tomorrow's Leaders",
+    description:
+      "Empowering students to achieve their academic and research goals",
   },
 ];
 
@@ -51,105 +55,104 @@ const galleryImages = [
     id: 1,
     src: "/gallery/g1.jpeg",
     category: "awards",
-    title: "National Science Award 2023",
+    title: "Student Gatherings",
     date: "December 2023",
   },
   {
     id: 2,
     src: "/gallery/g5.jpeg",
     category: "research",
-    title: "Lab Research Session",
+    title: "Student Gatherings",
     date: "November 2023",
   },
   {
     id: 3,
     src: "/gallery/g6.jpeg",
     category: "teaching",
-    title: "Lecture at MNIT",
+    title: "Student Gatherings",
     date: "October 2023",
   },
   {
     id: 4,
     src: "/gallery/g7.jpeg",
     category: "conferences",
-    title: "International Chemistry Summit",
+    title: "Student Gatherings",
     date: "September 2023",
   },
   {
     id: 5,
     src: "/gallery/g8.jpeg",
     category: "students",
-    title: "PhD Student Graduation",
+    title: "Student Gatherings",
     date: "August 2023",
   },
   {
     id: 6,
     src: "/gallery/g9.jpeg",
     category: "awards",
-    title: "Excellence in Teaching Award",
+    title: "Student Gatherings",
     date: "July 2023",
   },
   {
     id: 7,
     src: "/gallery/g10.jpeg",
     category: "research",
-    title: "Laboratory Equipment Demo",
+    title: "Student Gatherings",
     date: "June 2023",
   },
   {
     id: 8,
     src: "/gallery/g11.jpeg",
     category: "conferences",
-    title: "Panel Discussion",
+    title: "Student Gatherings",
     date: "May 2023",
   },
   {
     id: 9,
     src: "/gallery/g12.jpeg",
     category: "students",
-    title: "Research Team Meeting",
+    title: "Student Gatherings",
     date: "April 2023",
   },
   {
     id: 10,
     src: "/gallery/g13.jpeg",
     category: "students",
-    title: "Research Team Meeting",
+    title: "Student Gatherings",
     date: "April 2023",
   },
   {
     id: 11,
     src: "/gallery/gc4.jpeg",
     category: "students",
-    title: "Research Team Meeting",
+    title: "Student Gatherings",
     date: "April 2023",
   },
   {
     id: 12,
     src: "/gallery/g15.jpeg",
     category: "students",
-    title: "Research Team Meeting",
+    title: "Student Gatherings",
     date: "April 2023",
   },
   {
     id: 13,
     src: "/gallery/g16.jpeg",
     category: "students",
-    title: "Research Team Meeting",
+    title: "Student Gatherings",
     date: "April 2023",
   },
   {
     id: 14,
     src: "/gallery/g17.jpeg",
     category: "students",
-    title: "Research Team Meeting",
+    title: "Student Gatherings",
     date: "April 2023",
   },
 ];
 
 export default function GalleryPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [lightboxImage, setLightboxImage] = useState<any>(null);
   const [showNavbar, setShowNavbar] = useState(false);
 
@@ -185,11 +188,6 @@ export default function GalleryPage() {
       prev => (prev - 1 + featuredImages.length) % featuredImages.length
     );
   };
-
-  const filteredImages =
-    selectedCategory === "all"
-      ? galleryImages
-      : galleryImages.filter(img => img.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-white w-full overflow-x-hidden">
@@ -256,8 +254,8 @@ export default function GalleryPage() {
                     onClick={() => setCurrentSlide(index)}
                     className={`h-1 rounded-full transition-all duration-300 ${
                       index === currentSlide
-                        ? "w-12 bg-blue-500"
-                        : "w-6 bg-gray-500 hover:bg-gray-400"
+                        ? "w-12 bg-white"
+                        : "w-6 bg-white/40 hover:bg-white/60"
                     }`}
                   />
                 ))}
@@ -293,42 +291,15 @@ export default function GalleryPage() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Journey Through Memories
+              With Students
             </h2>
-            <div className="h-1 w-20 bg-blue-600 mx-auto mb-6"></div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore the memorable moments from my academic journey, research
-              achievements, and interactions with students and colleagues.
-            </p>
-          </motion.div>
-
-          {/* Category Filter */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-3 mb-12"
-          >
-            {galleryCategories.map(category => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? "bg-blue-600 text-white shadow-lg scale-105"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
+            <div className="h-1 w-20 bg-blue-600 mx-auto"></div>
           </motion.div>
 
           {/* Asymmetrical Horizontal Masonry Gallery */}
           <motion.div layout className="space-y-4 md:space-y-6">
             <AnimatePresence>
-              {filteredImages.map((image, index) => {
+              {galleryImages.map((image, index) => {
                 // Create varied horizontal layouts
                 const layouts = [
                   { width: "w-full", height: "h-64 md:h-80", offset: "" },
@@ -385,7 +356,7 @@ export default function GalleryPage() {
                             <div className="flex items-end justify-between">
                               <div className="flex-1">
                                 <h3 className="text-white font-bold text-lg md:text-2xl mb-2">
-                                  {image.title}
+                                  With Students
                                 </h3>
                                 <p className="text-gray-300 text-sm md:text-base">
                                   {image.date}
@@ -400,8 +371,6 @@ export default function GalleryPage() {
                             </div>
                           </div>
                         </div>
-                        {/* Decorative corner accent */}
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-full"></div>
                       </div>
                     </motion.div>
                   </motion.div>

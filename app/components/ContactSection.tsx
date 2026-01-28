@@ -10,6 +10,7 @@ import {
   FaGithub,
   FaResearchgate,
   FaPaperPlane,
+  FaUniversity,
 } from "react-icons/fa";
 
 const socialLinks = [
@@ -36,6 +37,12 @@ const socialLinks = [
     icon: FaTwitter,
     url: "https://x.com/DrAbhineetVerma?s=20",
     color: "hover:text-sky-500",
+  },
+  {
+    name: "MNIT Profile",
+    icon: FaUniversity,
+    url: "https://www.mnit.ac.in/dept_chemistry/profile?fid=RqSO",
+    color: "hover:text-orange-600",
   },
   // {
   //   name: "GitHub",
@@ -162,6 +169,7 @@ export default function ContactSection() {
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    title={social.name}
                     initial={{ opacity: 0, y: 20 }}
                     animate={
                       isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }

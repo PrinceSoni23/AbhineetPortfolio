@@ -69,7 +69,7 @@ export const researchWorks = [
     year: "2025",
     description:
       "DRC-14/2025-26/63/01-31/21 - Funding for innovative research in organic chemistry.",
-    image: "/gallery/g13.jpeg",
+    image: "/publications/fsg.png",
     impact: "Research Grant",
     citations: "N/A",
     icon: FaHandHoldingUsd,
@@ -81,7 +81,7 @@ export const researchWorks = [
     year: "2022",
     description:
       "Recognition for excellence in teaching and educational innovation at BHU.",
-    image: "/gallery/g15.jpeg",
+    image: "/publications/ioe.png",
     impact: "Teaching Excellence",
     citations: "N/A",
     icon: FaCertificate,
@@ -93,7 +93,7 @@ export const researchWorks = [
     year: "2023",
     description:
       "American Journal of Applied Chemistry - Editorial board member from April 2023 to present.",
-    image: "/gallery/g16.jpeg",
+    image: "/publications/ebm.png",
     impact: "Academic Leadership",
     citations: "N/A",
     icon: FaEdit,
@@ -105,7 +105,7 @@ export const researchWorks = [
     year: "2018",
     description:
       "Council of Scientific and Industrial Research Junior and Senior Research Fellowship.",
-    image: "/gallery/g17.jpeg",
+    image: "/publications/fellowship.png",
     impact: "Research Fellowship",
     citations: "N/A",
     icon: FaAward,
