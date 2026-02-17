@@ -82,14 +82,25 @@ export default function HeroSection() {
               <div className="h-1 w-16 sm:w-20 bg-blue-600 mb-4 sm:mb-6 mx-auto lg:mx-0"></div>
             </motion.div>
 
-            <motion.h2
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="text-lg sm:text-xl md:text-2xl text-stone-600 font-light"
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4"
             >
-              Ph.D. in Chemistry
-            </motion.h2>
+              <h2 className="text-lg sm:text-xl md:text-2xl text-stone-600 font-light">
+                Ph.D. in Chemistry
+              </h2>
+              <a
+                href="https://www.mnit.ac.in/dept_chemistry/profile?fid=RqSO"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className="px-5 py-2 text-xs sm:text-sm bg-gradient-to-r from-slate-700 to-slate-900 text-white font-semibold rounded-lg hover:from-slate-800 hover:to-black transition-all duration-300 shadow-md hover:shadow-lg whitespace-nowrap">
+                  MNIT Profile
+                </button>
+              </a>
+            </motion.div>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -130,12 +141,12 @@ export default function HeroSection() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="relative h-[350px] sm:h-[400px] md:h-[480px] lg:h-[580px] w-full lg:ml-2 order-first lg:order-last"
+            className="relative h-[280px] sm:h-[320px] md:h-[380px] lg:h-[460px] w-full lg:ml-2 order-first lg:order-last"
           >
             <div className="relative h-full w-full">
               {/* Removed background blur and card styling for seamless integration */}
               <Image
-                src="/images/hero.png"
+                src="/images/hero2.png"
                 alt="Professor"
                 fill
                 className="object-contain object-center lg:object-right"

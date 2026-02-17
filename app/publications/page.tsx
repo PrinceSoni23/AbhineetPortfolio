@@ -60,12 +60,12 @@ function PieChart({
   });
 
   return (
-    <div className="relative w-[120px] h-[120px] p-2">
+    <div className="relative p-2" style={{ width: size, height: size }}>
       <svg
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
-        className="block"
+        className="block w-full h-full"
         style={{ overflow: "visible" }}
       >
         <g>
@@ -1145,34 +1145,36 @@ export default function PublicationsPage() {
       {/* Research Areas full section */}
       <section id="research-areas" className="py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-12 max-w-7xl">
-          <div className="rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <div className="rounded-lg p-4 sm:p-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
               Research Areas
             </h2>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-xs sm:text-sm text-gray-600 mb-6">
               Overview of main research areas and their relative emphasis.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-              <div className="col-span-1 flex justify-center">
-                <div className="rounded-xl p-6">
-                  <PieChart data={researchAreas} size={180} innerRadius={56} />
+            <div className="flex flex-col md:grid md:grid-cols-3 gap-6 md:gap-8">
+              {/* Pie Chart - Smaller and centered on mobile */}
+              <div className="flex justify-center items-center md:col-span-1 mb-6 md:mb-0">
+                <div className="w-[150px] sm:w-[170px] md:w-[200px]">
+                  <PieChart data={researchAreas} size={150} innerRadius={47} />
                 </div>
               </div>
 
-              <div className="md:col-span-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Legend - Full width on mobile */}
+              <div className="md:col-span-2 w-full">
+                <div className="grid grid-cols-1 gap-3">
                   {researchAreas.map(area => (
                     <div
                       key={area.label}
-                      className="flex items-center gap-3 p-2 bg-gray-50 rounded"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors"
                     >
                       <div
                         style={{ background: area.color }}
                         className="w-4 h-4 rounded-full shrink-0"
                       ></div>
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-800 truncate">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-800">
                           {area.label}
                         </div>
                         <div className="text-xs text-gray-500">
